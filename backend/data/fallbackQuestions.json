@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "question": "What is the difference between let, const, and var in JavaScript?",
+        "answer": "let and const are block scoped, var is function scoped. const cannot be reassigned, while let can. var is hoisted differently.",
+        "level": "easy",
+        "time": 60
+    },
+    {
+        "id": 2,
+        "question": "Explain the concept of props in React components.",
+        "answer": "Props are inputs to React components, passed down from parent to child, and are read-only.",
+        "level": "easy",
+        "time": 60
+    },
+    {
+        "id": 3,
+        "question": "How would you implement error boundaries in React?",
+        "answer": "By creating a class component that implements componentDidCatch and getDerivedStateFromError to handle rendering fallback UI.",
+        "level": "medium",
+        "time": 90
+    },
+    {
+        "id": 4,
+        "question": "Explain the differences between REST and GraphQL APIs.",
+        "answer": "REST uses fixed endpoints and returns full data objects. GraphQL lets clients query specific fields, reducing over/under-fetching.",
+        "level": "medium",
+        "time": 90
+    },
+    {
+        "id": 5,
+        "question": "Design a real-time chat system architecture using Node.js and WebSockets.",
+        "answer": "Use Node.js with WebSocket or Socket.io for real-time messaging, backed by a database like Redis or MongoDB for persistence.",
+        "level": "hard",
+        "time": 120
+    },
+    {
+        "id": 6,
+        "question": "How would you optimize a React application for better performance?",
+        "answer": "Use memoization (React.memo, useMemo, useCallback), code-splitting, lazy loading, and virtualization for lists.",
+        "level": "hard",
+        "time": 120
+    }
+]
