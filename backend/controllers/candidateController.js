@@ -45,5 +45,27 @@ exports.updateUserInfo = (req,res) => {
   res.json({ success:true });
 };
 
+exports.deleteCandidate = (req, res) => {
+  const { sessionId } = req.params;
+  
+  // Find candidate index
+  const candidateIndex = candidates.findIndex(c => c.sessionId === sessionId);
+  
+  if (candidateIndex === -1) {
+    return res.status(404).json({ error: 'Candidate not found' });
+  }
+  
+  // Remove candidate from array
+  candidates.splice(candidateIndex, 1);
+  
+  // Also remove the corresponding session if it exists
+  const sessionIndex = sessions.findIndex(s => s.sessionId === sessionId);
+  if (sessionIndex !== -1) {
+    sessions.splice(sessionIndex, 1);
+  }
+  
+  res.json({ success: true, message: 'Candidate deleted successfully' });
+};
+
 module.exports.sessions = sessions;
 module.exports.candidates = candidates;

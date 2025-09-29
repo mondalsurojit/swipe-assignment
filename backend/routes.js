@@ -24,6 +24,7 @@ router.get('/api/session/:sessionId', candidateController.getSession);
 router.get('/api/candidates', candidateController.getCandidates);
 router.get('/api/candidate/:sessionId', candidateController.getCandidate);
 router.post('/api/update-user-info', candidateController.updateUserInfo);
+router.delete('/api/candidate/:sessionId', candidateController.deleteCandidate);
 
 // Error handler
 router.use(errorHandler);

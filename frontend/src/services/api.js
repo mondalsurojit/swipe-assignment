@@ -104,6 +104,12 @@ class ApiService {
   async getCandidateDetails(sessionId) {
     return this.request(`/candidate/${sessionId}`);
   }
+
+  async deleteCandidate(sessionId) {
+    return this.request(`/candidate/${sessionId}`, {
+      method: 'DELETE'
+    });
+  }
 }
 
 export default new ApiService();

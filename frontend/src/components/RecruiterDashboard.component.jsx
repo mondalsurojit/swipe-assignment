@@ -4,6 +4,7 @@ import { Card, Button, Input, Table, Badge, Progress, Select, Space, Typography,
 import { UserOutlined, SearchOutlined, StarOutlined, DashboardOutlined, FileTextOutlined, EyeOutlined, FolderOpenOutlined, MoreOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useAuth } from '../hooks/useAuth';
 import { useDashboard } from '../hooks/useDashboard';
+import ApiService from '../services/api';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -23,7 +24,8 @@ const RecruiterDashboard = () => {
     setSortBy,
     setSortOrder,
     setSelectedCandidate,
-    getCandidateDetails
+    getCandidateDetails,
+    fetchCandidates
   } = useDashboard();
 
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
@@ -65,11 +67,10 @@ const RecruiterDashboard = () => {
       onOk: async () => {
         try {
           setDeletingId(sessionId);
-          // Call your API to delete the interview
-          // await ApiService.deleteCandidate(sessionId);
+          await ApiService.deleteCandidate(sessionId);
           message.success('Interview deleted successfully');
           // Refresh the candidates list
-          // fetchCandidates();
+          await fetchCandidates();
         } catch (error) {
           message.error('Failed to delete interview');
         } finally {

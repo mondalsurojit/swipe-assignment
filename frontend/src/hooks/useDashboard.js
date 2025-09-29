@@ -1,5 +1,5 @@
 // hooks/useDashboard.js
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { dashboardActions } from '../store';
 import ApiService from '../services/api';
@@ -8,6 +8,7 @@ import { message } from 'antd';
 export const useDashboard = () => {
   const dispatch = useDispatch();
   const dashboard = useSelector(state => state.dashboard);
+  const debounceTimer = useRef(null);
 
   const fetchCandidates = async () => {
     try {
@@ -36,9 +37,27 @@ export const useDashboard = () => {
     }
   };
 
+  // Debounced search effect
+  useEffect(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      fetchCandidates();
+    }, 500); // 500ms delay for search
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [dashboard.searchTerm]);
+
+  // Immediate fetch for sort changes
   useEffect(() => {
     fetchCandidates();
-  }, [dashboard.searchTerm, dashboard.sortBy, dashboard.sortOrder]);
+  }, [dashboard.sortBy, dashboard.sortOrder]);
 
   return {
     ...dashboard,
