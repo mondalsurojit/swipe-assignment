@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Input, Table, Badge, Progress, Select, Space, Typography, Avatar, Divider, Spin, Tabs, Modal } from 'antd';
-import { UserOutlined, SearchOutlined, StarOutlined, DashboardOutlined, FileTextOutlined, EyeOutlined } from '@ant-design/icons';
+import { Card, Button, Input, Table, Badge, Progress, Select, Space, Typography, Avatar, Divider, Spin, Tabs, Modal, Dropdown, message } from 'antd';
+import { UserOutlined, SearchOutlined, StarOutlined, DashboardOutlined, FileTextOutlined, EyeOutlined, FolderOpenOutlined, MoreOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useAuth } from '../hooks/useAuth';
 import { useDashboard } from '../hooks/useDashboard';
 
@@ -28,6 +28,7 @@ const RecruiterDashboard = () => {
 
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [resumeUrl, setResumeUrl] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
   const getDifficultyBadge = (qNum) => {
     if (qNum <= 2) return <Badge color="green" text="Easy" />;
@@ -49,11 +50,44 @@ const RecruiterDashboard = () => {
   };
 
   const handleResumePreview = (resumePath) => {
-    // Assuming resumePath is relative to backend URL
     const fullUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resume/${resumePath}`;
     setResumeUrl(fullUrl);
     setResumePreviewOpen(true);
   };
+
+  const handleDeleteInterview = async (sessionId) => {
+    Modal.confirm({
+      title: 'Delete Interview',
+      content: 'Are you sure you want to delete this interview? This action cannot be undone.',
+      okText: 'Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          setDeletingId(sessionId);
+          // Call your API to delete the interview
+          // await ApiService.deleteCandidate(sessionId);
+          message.success('Interview deleted successfully');
+          // Refresh the candidates list
+          // fetchCandidates();
+        } catch (error) {
+          message.error('Failed to delete interview');
+        } finally {
+          setDeletingId(null);
+        }
+      }
+    });
+  };
+
+  const getActionMenuItems = (record) => [
+    {
+      key: 'delete',
+      icon: <DeleteOutlined />,
+      label: 'Delete',
+      danger: true,
+      onClick: () => handleDeleteInterview(record.sessionId)
+    }
+  ];
 
   // Helper function to safely get question text
   const getQuestionText = (question) => {
@@ -67,16 +101,8 @@ const RecruiterDashboard = () => {
   };
 
   const DashboardContent = () => {
-    if (loading) {
-      return (
-        <div className="flex justify-center items-center min-h-[400px]">
-          <Spin size="large" />
-        </div>
-      );
-    }
-
     if (selectedCandidate) {
-      console.log('Selected candidate data:', selectedCandidate); // Debug log
+      console.log('Selected candidate data:', selectedCandidate);
       
       return (
         <div>
@@ -216,7 +242,7 @@ const RecruiterDashboard = () => {
         <Table
           dataSource={candidates}
           rowKey="sessionId"
-          loading={loading}
+          loading={false}
           pagination={{ pageSize: 10 }}
           columns={[
             {
@@ -264,27 +290,33 @@ const RecruiterDashboard = () => {
               render: (date) => date ? new Date(date).toLocaleDateString() : 'N/A'
             },
             {
-              title: 'Actions',
-              key: 'action',
+              title: 'View Details',
+              key: 'viewDetails',
+              align: 'center',
               render: (_, record) => (
-                <Space>
-                  <Button 
-                    type="primary" 
-                    size="small"
-                    onClick={() => handleCandidateClick(record)}
-                  >
-                    View Details
-                  </Button>
-                  {record.resumePath && (
-                    <Button 
-                      icon={<EyeOutlined />}
-                      size="small"
-                      onClick={() => handleResumePreview(record.resumePath)}
-                    >
-                      Resume
-                    </Button>
-                  )}
-                </Space>
+                <Button 
+                  type="link"
+                  icon={<FolderOpenOutlined style={{ fontSize: '18px' }} />}
+                  onClick={() => handleCandidateClick(record)}
+                />
+              )
+            },
+            {
+              title: 'Actions',
+              key: 'actions',
+              align: 'center',
+              render: (_, record) => (
+                <Dropdown
+                  menu={{ items: getActionMenuItems(record) }}
+                  trigger={['click']}
+                  placement="bottomRight"
+                >
+                  <Button
+                    type="text"
+                    icon={<MoreOutlined style={{ fontSize: '18px' }} />}
+                    loading={deletingId === record.sessionId}
+                  />
+                </Dropdown>
               )
             }
           ]}
